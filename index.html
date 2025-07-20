@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard</title>
+    <link rel="shortcut icon" href="./icons/trash_icon.svg" type="image/x-icon">
+    <link rel="stylesheet" href="reset.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="sidebar__top">My Dashboard</div>
+            <nav class="nav">
+                <ul class="nav__list">
+                    <li class="nav__link">Dashboard</li>
+                    <li class="nav__link">...</li>
+                    <li class="nav__link">...</li>
+                </ul>
+            </nav>
+            <button type="button" class="sidebar__buttom button">Settings</button>
+        </aside>
+        <main class="main">
+            <header class="header">
+                <div class="header__title">
+                    <h1 class="title">Hi, &lt;name&gt;</h1>
+                    <blockquote id="quote" class="quote">&lt;quote&gt;</blockquote>
+                </div>
+                <div class="calendar">
+                    <div id="date" class="calendar__date">&lt;month&lt;, &lt;year&lt; 00:00</div>
+                    <div class="calendar__controls">
+                        <!-- Стрелки -->
+                    </div>
+                    <div class="calendar__weekday-strip">
+                        <!-- Календарь -->
+                    </div>
+                </div>
+            </header>
+            <section class="widgets">
+                <div class="todo widget">
+                    <div class="todo__header">
+                        <h3 class="todo__title">My Tasks</h3>
+                        <button type="button" class="todo__buttons" id="add_task"><img
+                                src="./icons/add_task_icon.svg"></button>
+                    </div>
+                    <ul class="todo__list"></ul>
+                </div>
+                <div class="widget">...</div>
+                <div class="widget">...</div>
+                <div class="widget">...
+                    <!-- <div class="weather__icon">☀️</div>
+                        <div class="weather__temperature">00°C</div>
+                        <div class="weather__location">Russian, Moscow</div> -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
