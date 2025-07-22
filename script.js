@@ -31,16 +31,17 @@ loadQoute();
 
 let tasks = [];
 
+function saveTasks() {
+    localStorage.setItem('todo-tasks', JSON.stringify(tasks));
+}
+
 function loadTasks() {
     const data = localStorage.getItem('todo-tasks');
     if (data) {
         tasks = JSON.parse(data);
         renderTasks();
     }
-}
-
-function saveTasks() {
-    localStorage.setItem('todo-tasks', JSON.stringify(tasks));
+    loadFocusTask();
 }
 
 function addTask(text) {
@@ -129,6 +130,82 @@ addButton.addEventListener('click', () => {
             isInputActive = false;
         }
     });
+});
+
+
+let focusTask = {};
+
+function saveFocusTask() {
+    localStorage.setItem('focus-task', JSON.stringify(focusTask));
+}
+
+function loadFocusTask() {
+    let focusData = localStorage.getItem('focus-task');
+    if (focusData) {
+        focusTask = JSON.parse(focusData);
+        renderFocusTasks();
+    }
+}
+
+function addFocusTask(text) {
+    focusTask = {
+        createDate: Date.now(),
+        text,
+        complited: false
+    };
+
+    saveFocusTask();
+    renderFocusTasks();
+
+}
+
+function toggleFocusTask() {
+    focusTask.complited = !focusTask.complited;
+    saveFocusTask();
+    renderFocusTasks();
+}
+
+function renderFocusTasks() {
+    const focus = document.querySelector('.focus');
+    focus.querySelector('.focus__content').innerHTML = ``;
+
+    const p = document.createElement('p');
+    p.className = `focus__task ${focusTask.complited ? 'focus__task--done' : ''}`;
+    p.textContent = focusTask.text;
+    focus.querySelector('.focus__content').appendChild(p);
+
+    if(!focus.querySelector('.focus__button-check')) {
+        const CheckButton = document.createElement('button');
+        CheckButton.className = 'focus__button-check';
+        CheckButton.setAttribute('type', 'buuton');
+        CheckButton.innerHTML = `<img src="./icons/ckeck_icon.svg">`
+        CheckButton.addEventListener('click', () => toggleFocusTask());
+        focus.querySelector('.focus__header').appendChild(CheckButton);
+    }
+}
+
+
+const focusInput = document.getElementById('focus__input');
+let focusInputConfirmed = false;
+
+focusInput.addEventListener('keydown', (e) => {
+    if (e.key == 'Enter') {
+        const value = focusInput.value.trim();
+        if (value == "") focusInput.blur();
+        else {
+            focusInputConfirmed = true;
+            addFocusTask(value);
+        }
+    }
+    if (e.key === 'Escape') {
+        focusInputConfirmed = false;
+        focusInput.blur();
+    }
+});
+focusInput.addEventListener('blur', () => {
+    if (!focusInputConfirmed) {
+        focusInput.value = "";
+    }
 });
 
 window.addEventListener("DOMContentLoaded", loadTasks);
