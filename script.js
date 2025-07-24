@@ -22,113 +22,103 @@ const quotes = [
     "Код пишется не сам. Его пишешь ты."
 ];
 
-function loadQoute() {
+function loadQuote() {
     const randomIndex = Math.floor(Math.random() * quotes.length);
     document.getElementById('quote').textContent = quotes[randomIndex];
 }
-loadQoute();
+loadQuote();
 
 
-let tasks = [];
+const TodoManager = {
+    tasks: [],
 
-function saveTasks() {
-    localStorage.setItem('todo-tasks', JSON.stringify(tasks));
-}
+    init() {
+        this.loadTasks();
+    },
 
-function loadTasks() {
-    const data = localStorage.getItem('todo-tasks');
-    if (data) {
-        tasks = JSON.parse(data);
-        renderTasks();
+    saveTasks() {
+        localStorage.setItem('todo-tasks', JSON.stringify(this.tasks));
+    },
+
+    loadTasks() {
+        const data = localStorage.getItem('todo-tasks');
+        if (data) this.tasks = JSON.parse(data);
+        this.renderTasks();
+    },
+
+    addTask(text) {
+        this.tasks.push({ text, completed: false });
+        this.saveTasks();
+        this.renderTasks();
+    },
+
+    toggleTask(index) {
+        this.tasks[index].completed = !this.tasks[index].completed;
+        this.saveTasks();
+        this.renderTasks();
+    },
+
+    deleteTask(index) {
+        this.tasks.splice(index, 1);
+        this.saveTasks();
+        this.renderTasks();
+    },
+
+    renderTasks() {
+        const list = document.querySelector(".todo__list");
+        if (!list) return;
+
+        list.innerHTML = this.tasks.map((task, index) => `
+            <li class="task ${task.completed ? 'task--done' : ''}">
+                <span class="task__number">${String(index + 1).padStart(2, '0')}</span>
+                <p class="task__content">${task.text}</p>
+                <div class="task__buttons">
+                    <button type="button" class="task__button-delete"><img src="./icons/trash_icon.svg"></button>
+                    <button type="button" class="task__button-check"><img src="./icons/ckeck_icon.svg"></button>
+                </div>
+            </li>
+        `).join('');
+
+        const deleteButtons = list.querySelectorAll('.task__button-delete');
+        const checkButtons = list.querySelectorAll('.task__button-check');
+
+        deleteButtons.forEach((button, index) => {
+            button.addEventListener('click', () => this.deleteTask(index));
+        });
+
+        checkButtons.forEach((button, index) => {
+            button.addEventListener('click', () => this.toggleTask(index));
+        });
     }
-    loadFocusTask();
-}
-
-function addTask(text) {
-    tasks.push({ text, completed: false });
-    saveTasks();
-    renderTasks();
-}
-
-function toggleTask(index) {
-    tasks[index].completed = !tasks[index].completed;
-    saveTasks();
-    renderTasks();
-}
-
-function deleteTask(index) {
-    tasks.splice(index, 1);
-    saveTasks();
-    renderTasks();
-}
-
-function renderTasks() {
-    const list = document.querySelector(".todo__list");
-    list.innerHTML = "";
-
-    tasks.forEach((task, index) => {
-        const li = document.createElement("li");
-        li.className = `task ${task.completed ? 'task--done' : ''}`;
-        li.innerHTML = `
-            <span class="task__number">${String(index + 1).padStart(2, '0')}</span>
-            <p class="task__content">${task.text}</p>
-            <div class="task__buttons">
-                <!-- <button type="button" class="task__button-delete"><img src="./icons/trash_icon.svg"></button> -->
-                <button class="task__button-check"><img src="./icons/ckeck_icon.svg"></button>
-            </div>
-        `;
-        li.querySelector(".task__button-check").addEventListener("click", () => toggleTask(index));
-        list.appendChild(li);
-    });
-}
+};
 
 
 const taskList = document.querySelector('.todo__list');
 const addButton = document.getElementById('add_task');
-let isInputActive = false;
 
 addButton.addEventListener('click', () => {
-    if (isInputActive) return;
-    const index = String(taskList.children.length + 1).padStart(2, '0');
+    if (document.querySelector('#task__input')) return;
 
     const li = document.createElement('li');
     li.className = 'task task--new';
     li.innerHTML = `
-        <span class="task__number">${index}</span>
+        <span class="task__number">${String(TodoManager.tasks.length + 1).padStart(2, '0')}</span>
         <input type="text" id="task__input" placeholder="Write a new Task">
-        <div class="task__buttons">
-            <!-- <button type="button" class="task__button-delete"><img src="./icons/trash_icon.svg"></button> -->
-            <button type="button" class="task__button-check"><img src="./icons/ckeck_icon.svg"></button>
-        </div>
-        `;
+    `;
     taskList.appendChild(li);
 
     const input = li.querySelector('input');
     input.focus();
-    isInputActive = true;
 
-    let inputConfirmed = false;
+    input.addEventListener('blur', () => {
+        const value = input.value.trim();
+        if (value) TodoManager.addTask(value);
+        li.remove();
+    });
 
     input.addEventListener('keydown', (e) => {
-        if (e.key == 'Enter') {
-            const value = input.value.trim();
-
-            inputConfirmed = true;
-            isInputActive = false;
-            li.remove();
-            addTask(value);
-
-        } else if (e.key === 'Escape') {
-            li.remove();
-            isInputActive = false;
-            return;
-        }
-    });
-    input.addEventListener('blur', () => {
-        if (!inputConfirmed || input.value.trim() == "") {
-            li.remove();
-            isInputActive = false;
-        }
+        if (e.key === 'Enter') input.blur();
+        if (e.key === 'Escape') li.remove();
     });
 });
 
@@ -151,16 +141,14 @@ function addFocusTask(text) {
     focusTask = {
         createDate: Date.now(),
         text,
-        complited: false
+        completed: false
     };
-
     saveFocusTask();
     renderFocusTasks();
-
 }
 
 function toggleFocusTask() {
-    focusTask.complited = !focusTask.complited;
+    focusTask.completed = !focusTask.completed;
     saveFocusTask();
     renderFocusTasks();
 }
@@ -170,11 +158,11 @@ function renderFocusTasks() {
     focus.querySelector('.focus__content').innerHTML = ``;
 
     const p = document.createElement('p');
-    p.className = `focus__task ${focusTask.complited ? 'focus__task--done' : ''}`;
+    p.className = `focus__task ${focusTask.completed ? 'focus__task--done' : ''}`;
     p.textContent = focusTask.text;
     focus.querySelector('.focus__content').appendChild(p);
 
-    if(!focus.querySelector('.focus__button-check')) {
+    if (!focus.querySelector('.focus__button-check')) {
         const CheckButton = document.createElement('button');
         CheckButton.className = 'focus__button-check';
         CheckButton.setAttribute('type', 'buuton');
@@ -208,7 +196,10 @@ focusInput.addEventListener('blur', () => {
     }
 });
 
-window.addEventListener("DOMContentLoaded", loadTasks);
+window.addEventListener("DOMContentLoaded", () => {
+    TodoManager.init();
+    loadFocusTask();
+});
 
 
 // function getWeekDay(date) {
