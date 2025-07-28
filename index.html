@@ -5,32 +5,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Dashboard</title>
-    <link rel="shortcut icon" href="./icons/trash_icon.svg" type="image/x-icon">
-    <link rel="stylesheet" href="reset.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="./assets/icons/trash_icon.svg" type="image/x-icon">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
     <div class="dashboard-layout">
+        <button id="menu-toggle" class="menu-toggle" aria-label="Toggle menu">☰</button>
         <aside class="sidebar">
-            <div class="sidebar__top">My Dashboard</div>
-            <nav class="nav">
+            <h4 class="sidebar__header">My Dashboard</h4>
+            <nav class="sidebar__nav">
                 <ul class="nav__list">
-                    <li class="nav__link">Dashboard</li>
+                    <li class="nav__link">...</li>
+                    <li class="nav__link">...</li>
+                    <li class="nav__link">...</li>
+                </ul>
+                <ul class="nav__list">
+                    <li class="nav__link">...</li>
+                    <li class="nav__link">...</li>
+                    <li class="nav__link">...</li>
+                </ul>
+                <ul class="nav__list">
+                    <li class="nav__link">...</li>
                     <li class="nav__link">...</li>
                     <li class="nav__link">...</li>
                 </ul>
             </nav>
-            <button type="button" class="sidebar__buttom button">Settings</button>
+            <button type="button" class="sidebar__button button">Settings</button>
         </aside>
         <main class="main">
             <header class="header">
-                <div class="header__title">
-                    <h1 class="title">Hi, &lt;name&gt;</h1>
-                    <blockquote id="quote" class="quote">&lt;quote&gt;</blockquote>
+                <div class="header__greeting">
+                    <h1 class="header__title">Hi, &lt;name&gt;</h1>
+                    <blockquote id="quote" class="header__quote">&lt;quote&gt;</blockquote>
                 </div>
                 <div class="calendar">
-                    <div id="date" class="calendar__date">&lt;month&lt;, &lt;year&lt; 00:00</div>
+                    <span id="date" class="calendar__date">&lt;month&lt;, &lt;year&lt; 00:00</span>
                     <div class="calendar__controls">
                         <!-- Стрелки -->
                     </div>
@@ -40,15 +51,8 @@
                 </div>
             </header>
             <section class="widgets">
-                <div class="todo widget">
-                    <div class="todo__header">
-                        <h3 class="todo__title">My Tasks</h3>
-                        <button type="button" class="todo__buttons" id="add_task"><img
-                                src="./icons/add_task_icon.svg"></button>
-                    </div>
-                    <ul class="todo__list"></ul>
-                </div>
-                <div class="focus widget">
+                <div class="widget widget--medium"></div>
+                <div class="focus widget widget--small">
                     <div class="focus__header">
                         <h3 class="focus__title">Focus Day</h3>
                     </div>
@@ -56,13 +60,26 @@
                         <input type="text" id="focus__input" placeholder="Write a new focus">
                     </div>
                 </div>
-                <div class="widget">...</div>
-                <div class="widget">...</div>
+                <div class="widget widget--tall"></div>
+                <div class="todo widget widget--medium">
+                    <div class="todo__header">
+                        <h3 class="todo__title">My Tasks</h3>
+                        <button type="button" class="todo__buttons" id="add_task" aria-label="Add task">
+                            <svg class="icon icon--add" width="40" height="40" viewBox="0 0 40 40" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M19.665 3.5C28.5928 3.50002 35.8301 10.7374 35.8301 19.665C35.8301 28.5928 28.5928 35.8301 19.665 35.8301C10.7374 35.8301 3.50002 28.5928 3.5 19.665C3.5 10.7374 10.7374 3.5 19.665 3.5ZM19.665 12.2217C18.6219 12.2217 17.7764 13.0672 17.7764 14.1104V17.7764H14.1104C13.0672 17.7764 12.2217 18.6219 12.2217 19.665C12.2217 20.7081 13.0672 21.5537 14.1104 21.5537H17.7764V25.2197C17.7764 26.2628 18.6219 27.1084 19.665 27.1084C20.7081 27.1084 21.5537 26.2628 21.5537 25.2197V21.5537H25.2197C26.2628 21.5537 27.1084 20.7081 27.1084 19.665C27.1084 18.6219 26.2628 17.7764 25.2197 17.7764H21.5537V14.1104C21.5537 13.0672 20.7081 12.2217 19.665 12.2217Z"
+                                    stroke="#393939" />
+                            </svg>
+                        </button>
+                    </div>
+                    <ul class="todo__list"></ul>
+                </div>
+                <div class="widget widget--small"></div>
             </section>
         </main>
     </div>
-
-    <script src="script.js"></script>
+    <script src="./js/script.js"></script>
 </body>
 
 </html>
