@@ -78,6 +78,7 @@ const TodoManager = {
             }
         });
         this.saveTasks();
+
     },
     addTask(text) {
         this.tasks.push({
@@ -88,6 +89,7 @@ const TodoManager = {
         });
         this.saveTasks();
         this.renderTasks();
+
     },
     editTask(input, index) {
         const text = input.value.trim() || this.tasks[index].text;
@@ -101,12 +103,14 @@ const TodoManager = {
         this.tasks[index].completed = !this.tasks[index].completed;
         this.saveTasks();
         this.renderTasks();
+
     },
     deleteTask(index) {
         this.tasks.splice(index, 1);
         this.saveTasks();
         this.renderTasks();
         this.renderFocusTask();
+
     },
     setFocusTask(index) {
         if (this.tasks[index].focus) {
@@ -129,6 +133,7 @@ const TodoManager = {
         this.saveTasks();
         this.renderTasks();
         this.renderFocusTask();
+
     },
     setFocusFromInput(text) {
         const today = new Date().toISOString().split('T')[0];
@@ -170,6 +175,7 @@ const TodoManager = {
             });
             focusInput.addEventListener('blur', () => focusInput.value = "");
         }
+        this.updateProgress();
     },
     renderTasks() {
         const list = document.querySelector(".todo__list");
@@ -241,6 +247,19 @@ const TodoManager = {
                 });
             });
         });
+        this.updateProgress();
+    },
+    updateProgress() {
+        const total = this.tasks.length;
+        const done = this.tasks.filter(t => t.completed).length;
+        const percent = total > 0 ? (done / total) * 100 : 0;
+        const focus = this.tasks.find(t => t.focus);
+        const focusStage = focus ? focus.completed ? "done" : "In Process" : "None";
+
+        document.querySelector('.progress__focus-text').textContent = `${focusStage}`;
+
+        document.querySelector('.progress__todo-text').textContent = `${done} / ${total}`;
+        document.querySelector('.progress__fill').style.width = `${percent}%`;
     }
 }
 
@@ -281,6 +300,91 @@ document.getElementById('add_task').addEventListener('click', createNewTaskInput
 window.addEventListener("DOMContentLoaded", () => {
     TodoManager.init();
 });
+
+// Pomadoro Progress
+const canvas = document.getElementById('timer__progress');
+const ctx = canvas.getContext('2d');
+const radius = 90;
+const center = canvas.width / 2;
+
+function drawProgress(percent) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Фон-кольцо
+    ctx.beginPath();
+    ctx.strokeStyle = '#ddd';
+    ctx.lineWidth = 10;
+    ctx.arc(center, center, radius, 0, 2 * Math.PI);
+    ctx.stroke();
+
+    // Прогресс-кольцо
+    ctx.beginPath();
+    ctx.strokeStyle = '#4caf50';
+    ctx.lineWidth = 10;
+    ctx.lineCap = 'round';
+    const endAngle = (2 * Math.PI * percent) / 100;
+    ctx.arc(center, center, radius, -Math.PI / 2, endAngle - Math.PI / 2);
+    ctx.stroke();
+}
+
+// Pomadoro timer
+let timer = null;
+let isRunning = false;
+let isFocus = true;
+const totalTime = 25 * 60; // 1.500 sec
+let timeLeft = totalTime;
+
+function updateDisplay() {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    const timerSpan = document.querySelector('.timer__text');
+    timerSpan.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+};
+function startTimer() {
+    if (!isRunning) {
+        timer = setInterval(() => {
+            timeLeft--;
+            const percent = 100 - (timeLeft / totalTime) * 100;
+            drawProgress(percent);
+            updateDisplay();
+            if (timeLeft <= 0) {
+                isFocus = !isFocus;
+                totalTime = isFocus ? 25 * 60 : 5 * 60;
+                timeLeft = totalTime;
+            }
+        }, 1000);
+        isRunning = true;
+        isFocus = true;
+    }
+    else isRunning = false;
+};
+function pauseTimer() {
+    clearInterval(timer);
+    isRunning = false;
+}
+function resetTimer() {
+    isRunning = false;
+    clearInterval(timer);
+    timeLeft = 25 * 60;
+    updateDisplay();
+    drawProgress(0);
+    startTimerButton.textContent = 'Start';
+};
+updateDisplay();
+
+const startTimerButton = document.getElementById('timer-start');
+startTimerButton.addEventListener('click', () => {
+    if (isRunning) {
+        pauseTimer();
+        startTimerButton.textContent = 'Start';
+    } else {
+        startTimer();
+        startTimerButton.textContent = 'Pause';
+    }
+});
+const resetTimerButton = document.getElementById('timer-reset').addEventListener('click', resetTimer);
+
 
 // function getWeekDay(date) {
 //   let days = ['Sun', 'Mon', 'Thu', 'Wed', 'Tue', 'Fri', 'Sut'];
