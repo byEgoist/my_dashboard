@@ -385,6 +385,32 @@ startTimerButton.addEventListener('click', () => {
 });
 const resetTimerButton = document.getElementById('timer-reset').addEventListener('click', resetTimer);
 
+// Weather API
+async function fetchWeather(city) {
+    try {
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&appid=${API_KEY}&units=metric&lang=ru`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        document.querySelector('.weather__city-name').textContent = data.name;
+        document.querySelector('.weather__description').textContent = data.weather[0].description;
+        document.querySelector('.weather__temperature').textContent = `${Math.round(data.main.temp)}°C`;
+        const icon = data.weather[0].icon;
+        document.querySelector('.weather__icon').src = `http://openweathermap.org/img/wn/${icon}@2x.png`;
+    } catch (error) {
+        document.querySelector('.weather__city-name').textContent = "Ошибка";
+    }
+}
+
+const API_KEY = '17db9d44f75f4e9715899d71800e66bf';
+
+const cityInput = document.querySelector('.weather__input');
+const cityButton = document.querySelector('.weather__button');
+cityButton.addEventListener('click', () => {
+    const city = cityInput.value;
+    localStorage.setItem('city', city);
+    fetchWeather(city);
+})
 
 // function getWeekDay(date) {
 //   let days = ['Sun', 'Mon', 'Thu', 'Wed', 'Tue', 'Fri', 'Sut'];
